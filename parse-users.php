@@ -49,7 +49,7 @@ foreach($lines as $line => $content)
     {
         if ($in_user == false)
         {
-            if (preg_match("/^\w+\s+Cleartext-Password\s+:=\s+\"\w*\"$/",$content) == 1)
+            if (preg_match("/^\S+\s+Cleartext-Password\s+:=\s+\"\S*\"$/",$content) == 1)
             {
                 $data = preg_split("/Cleartext-Password\s+:=\s+\"/",$content);
                 $in_user = trim($data[0]);
