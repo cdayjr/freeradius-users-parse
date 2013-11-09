@@ -21,8 +21,10 @@ else
 $users_file = file_get_contents($users_filename);
 $lines = explode("\n", $users_file);
 
-$parse_users = false;
+$parse_users = 0;
 $in_user = false;
+$prepend = "";
+$append = "";
 
 $users = array();
 date_default_timezone_set("EST");
@@ -35,15 +37,15 @@ foreach($lines as $line => $content)
     // and stop when we get to End of Users
     if ($content == "### Begin of Users")
     {
-        $parse_users = true;
+        $parse_users = 1;
         continue;
     }
     elseif ($content == "### End of Users")
     {
-        $parse_users = false;
+        $parse_users = 2;
         continue;
     }
-    if ($parse_users == true)
+    if ($parse_users == 1)
     {
         if ($in_user == false)
         {
@@ -53,9 +55,7 @@ foreach($lines as $line => $content)
                 $in_user = trim($data[0]);
                 $users[$in_user] = array();
                 $users[$in_user]['password'] = rtrim(trim($data[0]),"\"");
-            }
-
-            else continue; // no username value given
+            } // if we don't have a user, ignore the line
         }
         else
         {
@@ -80,9 +80,14 @@ foreach($lines as $line => $content)
             }
         }
     }
-
-
-            
+    elseif ($parse_users == 0)
+    {
+        $prepend .= $content."\n";
+    }
+    elseif ($parse_users == 2)
+    {
+        $append .= $content."\n";
+    }
 
 }
 
@@ -90,8 +95,8 @@ if (isset($json_filename))
     file_put_contents($json_filename,
         json_encode($users,JSON_PRETTY_PRINT)."\n\n",LOCK_EX);
 
-
-$output = "### Begin of Users\n";
+$output = $prepend;
+$output .= "### Begin of Users\n";
 foreach ($users as $user => $data) {
     $output .= $user."\tCleartext-Password := \"".$data["password"]."\"\n";
     $output .= "\t\tFall-Through = Yes\n";
@@ -100,6 +105,7 @@ foreach ($users as $user => $data) {
     $output.= "#==========\n";
 }
 $output .= "### End of Users\n";
+$output .= rtrim($append);
 
 file_put_contents($output_filename,$output,LOCK_EX);
 
