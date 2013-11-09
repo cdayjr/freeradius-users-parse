@@ -54,7 +54,7 @@ foreach($lines as $line => $content)
                 $data = preg_split("/Cleartext-Password\s+:=\s+\"/",$content);
                 $in_user = trim($data[0]);
                 $users[$in_user] = array();
-                $users[$in_user]['password'] = rtrim(trim($data[0]),"\"");
+                $users[$in_user]['password'] = rtrim(trim($data[1]),"\"");
             } // if we don't have a user, ignore the line
         }
         else
