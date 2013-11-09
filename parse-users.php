@@ -47,9 +47,9 @@ foreach($lines as $line => $content)
     {
         if ($in_user == false)
         {
-            if (preg_match("/^\w+\s+Cleartext-Password := \"\w*\"$/",$content) == 1)
+            if (preg_match("/^\w+\s+Cleartext-Password\s+:=\s+\"\w*\"$/",$content) == 1)
             {
-                $data = preg_split("/Cleartext-Password := \"/",$content);
+                $data = preg_split("/Cleartext-Password\s+:=\s+\"/",$content);
                 $in_user = trim($data[0]);
                 $users[$in_user] = array();
                 $users[$in_user]['password'] = rtrim(trim($data[0]),"\"");
@@ -59,7 +59,7 @@ foreach($lines as $line => $content)
         }
         else
         {
-            if (preg_match("/^\s*Fall-Through = Yes$/",$content) == 1) continue;
+            if (preg_match("/^\s*Fall-Through\s+=\s+Yes$/",$content) == 1) continue;
             elseif (preg_match("/^#[\w\s:-]*$/",$content) == 1) // we must have a date here
             {
                 $date = explode("#", $content);
